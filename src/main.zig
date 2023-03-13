@@ -40,10 +40,12 @@ pub fn main() !u8 {
     }
 
     const programs = .{
-        .{ "yes", @import("./programs/yes.zig").main },
-        .{ "cat", @import("./programs/cat.zig").main },
-        .{ "true", @import("./programs/true.zig").main },
-        .{ "false", @import("./programs/false.zig").main },
+        .{ "yes", @import("./programs/shell/yes.zig").main },
+        .{ "cat", @import("./programs/text/cat.zig").main },
+        .{ "true", @import("./programs/shell/true.zig").main },
+        .{ "false", @import("./programs/shell/false.zig").main },
+        .{ "cp", @import("./programs/file/cp.zig").main },
+        .{ "rm", @import("./programs/file/rm.zig").main },
     };
 
     if ((args.first != null and (std.mem.eql(u8, args.first.?.data, "-h") or std.mem.eql(u8, args.first.?.data, "--help"))) or args.len == 0) {
@@ -53,9 +55,9 @@ pub fn main() !u8 {
             try commands.appendSlice(item[0]);
             if (i < programs.len - 1){
                 try commands.appendSlice(", ");
-            }
-            if (i%10 == 0){
-                try commands.appendSlice("\n  ");
+                if ((i + 1)%10 == 0){
+                    try commands.appendSlice("\n  ");
+                }
             }
         }
         var stdout = std.io.getStdOut();
@@ -64,6 +66,7 @@ pub fn main() !u8 {
             \\
             \\all commands:
             \\  {s}
+            \\
         , .{ name, commands.items }));
     } else if (std.mem.eql(u8, name, "mini-bb")) {
         var n = args.popFirst();
